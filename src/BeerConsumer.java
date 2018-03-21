@@ -1,5 +1,6 @@
 import java.util.Random;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
 
@@ -12,6 +13,7 @@ public class BeerConsumer implements IBuyier, Runnable {
     private BeerHouse bar;
     private int drikedBeers;
     private int timeToDrink;
+    private AtomicBoolean running = new AtomicBoolean(true);
 
     public BeerConsumer(String name, BeerHouse bar,int max , int min) {
         this.name = name;
@@ -28,7 +30,7 @@ public class BeerConsumer implements IBuyier, Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (this.running.get()) {
             this.buyBeer(bar.sellBeer(), name);
             try {
                 sleep(timeToDrink);
@@ -40,10 +42,12 @@ public class BeerConsumer implements IBuyier, Runnable {
 
     @Override
     public void buyBeer(Beer b, String n) {
-        if(b != null) {
+        if(!b.isAnEmptyGlass()) {
             this.drikedBeers++;
             System.out.println("El borrachin " + n + " ya se chupo " + this.drikedBeers + " birras");
             System.out.println(" ");
+        }else {
+            this.running.set(false);
         }
     }
 }

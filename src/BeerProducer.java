@@ -27,7 +27,7 @@ public class BeerProducer implements ISeller,Runnable{
 
     @Override
     public void run() {
-        while(true){
+        while(!client.isStop()){
             client.buyBeer(this.sellBeer(),this.name);
             try {
                 sleep(this.productionTime);
